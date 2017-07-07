@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-session": "^2.0.0-beta.2",
     "express": "^4.15.3",
     "mongoose": "^4.11.1",
     "nodemon": "^1.11.0",
