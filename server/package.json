@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.3",
+    "mongoose": "^4.11.1",
     "nodemon": "^1.11.0",
     "passport": "^0.3.2",
     "passport-google-oauth20": "^1.0.0"
