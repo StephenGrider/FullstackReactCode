@@ -18,6 +18,7 @@
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.1",
     "react-scripts": "1.0.10",
+    "react-stripe-checkout": "^2.4.0",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0"
   },
