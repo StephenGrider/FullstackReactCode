@@ -1,1 +1,3 @@
-module.exports = app => {};
+module.exports = app => {
+  app.post('/api/stripe', (req, res) => {});
+};
