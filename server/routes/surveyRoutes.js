@@ -11,7 +11,7 @@ const Survey = mongoose.model('surveys');
 
 module.exports = app => {
   app.get('/api/surveys', requireLogin, async (req, res) => {
-    const surveys = await Survey.find({ _user: req.user.id }).select({
+    const surveys = await Survey.find({ user: req.user.id }).select({
       recipients: false
     });
 
@@ -22,36 +22,43 @@ module.exports = app => {
     res.send('Thanks for voting!');
   });
 
-  app.post('/api/surveys/webhooks', (req, res) => {
-    const p = new Path('/api/surveys/:surveyId/:choice');
+  app.post('/api/surveys/webhooks', async (req, res) => {
+    try {
+      const p = new Path('/api/surveys/:surveyId/:choice');
 
-    _.chain(req.body)
-      .map(({ email, url }) => {
-        const match = p.test(new URL(url).pathname);
-        if (match) {
-          return { email, surveyId: match.surveyId, choice: match.choice };
-        }
-      })
-      .compact()
-      .uniqBy('email', 'surveyId')
-      .each(({ surveyId, email, choice }) => {
-        Survey.updateOne(
-          {
-            _id: surveyId,
-            recipients: {
-              $elemMatch: { email: email, responded: false }
+      const surveys = req.body
+          .map(surveyData => {
+            const match = p.test(new URL(surveyData.url).pathname);
+            if (match) {
+              return { email: surveyData.email, surveyId: match.surveyId, choice: match.choice };
             }
-          },
-          {
-            $inc: { [choice]: 1 },
-            $set: { 'recipients.$.responded': true },
-            lastResponded: new Date()
-          }
-        ).exec();
-      })
-      .value();
+          })
+          .filter(item => item !== null && item !== undefined);
 
-    res.send({});
+      const uniqueServeys = _.uniqBy(surveys, 'email', 'surveyId');
+
+      for (let survey of uniqueServeys) {
+        await Survey.updateOne(
+            {
+              _id: survey.surveyId,
+              recipients: {
+                $elemMatch: { email: survey.email, responded: false }
+              }
+            },
+            {
+              $inc: { [survey.choice]: 1 },
+              $set: { 'recipients.$.responded': true },
+              lastResponded: new Date()
+            }
+        ).exec();
+
+        res.send({});
+      }
+    } catch(error) {
+      console.log(error);
+    }
+
+
   });
 
   app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
@@ -61,13 +68,13 @@ module.exports = app => {
       title,
       subject,
       body,
-      recipients: recipients.split(',').map(email => ({ email: email.trim() })),
+      recipients: Mailer.getSurveyListFromEmailString(recipients),
       _user: req.user.id,
       dateSent: Date.now()
     });
 
-    // Great place to send an email!
-    const mailer = new Mailer(survey, surveyTemplate(survey));
+    const surveyContent = surveyTemplate(survey);
+    const mailer = new Mailer(survey, surveyContent);
 
     try {
       await mailer.send();
