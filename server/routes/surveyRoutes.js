@@ -11,7 +11,7 @@ const Survey = mongoose.model('surveys');
 
 module.exports = app => {
   app.get('/api/surveys', requireLogin, async (req, res) => {
-    const surveys = await Survey.find({ user: req.user.id }).select({
+    const surveys = await Survey.find({ _user: req.user.id }).select({
       recipients: false
     });
 
