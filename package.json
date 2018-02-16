@@ -1,0 +1,27 @@
+{
+  "name": "FullstackReactCode",
+  "version": "1.0.0",
+  "description": "Companion repo to a course on Udemy.com. See here: https://www.udemy.com/node-with-react-fullstack-web-development",
+  "main": "index.js",
+  "engines": {
+    "node": "8.7.0",
+    "npm": "5.6.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ontoneio/FullstackReactCode.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ontoneio/FullstackReactCode/issues"
+  },
+  "homepage": "https://github.com/ontoneio/FullstackReactCode#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
