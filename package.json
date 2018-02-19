@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "node ./index.js",
-    "dev": "nodemon index.js"
+    "server": "nodemon index.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -23,9 +25,12 @@
   },
   "homepage": "https://github.com/ontoneio/FullstackReactCode#readme",
   "dependencies": {
+    "concurrently": "^3.5.1",
     "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.2",
+    "http-proxy-middleware": "^0.17.4",
     "mongoose": "^5.0.6",
+    "morgan": "^1.9.0",
     "nodemon": "^1.15.0",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^1.0.0"

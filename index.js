@@ -2,13 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
+const logger = require('morgan');
 const keys = require('./config/keys');
 require('./models/User');
 require('./services/passport');
 
+
 mongoose.connect(keys.mongoURI)
 
 const app = express();
+
+app.use(logger('dev'))
+
+// require('./middleware/proxy')(app);  
 
 app.use(
   cookieSession({
