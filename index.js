@@ -14,8 +14,6 @@ const app = express();
 
 app.use(logger('dev'))
 
-// require('./middleware/proxy')(app);  
-
 app.use(
   cookieSession({
     maxAge: 30 * 24 * 60 * 60 * 1000,
