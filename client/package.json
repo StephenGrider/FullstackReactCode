@@ -14,10 +14,8 @@
     "eject": "react-scripts eject"
   },
   "proxy": {
-    "/auth": {
-        "target": "http://localhost:5000",
-        "pathRewrite": {"^3000": "5000/*"},
-    "changeOrigin": true
+    "/auth/*": {
+        "target": "http://localhost:5000"
     } 
   }
 }
