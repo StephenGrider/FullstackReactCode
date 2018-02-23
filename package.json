@@ -8,14 +8,14 @@
     "npm": "5.6.0"
   },
   "scripts": {
-    "start": "node ./index.js",
-    "server": "nodemon index.js",
-    "client": "npm run start --prefix client",
+    "start": "node ./server/index.js",
+    "server": "nodemon ./server/index.js",
+    "client": "npm run start --prefix ./server/client",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ontoneio/FullstackReactCode.git"
+    "url": "git+https://github.com/ontoneio/Tone-iO.git"
   },
   "keywords": [],
   "author": "",
