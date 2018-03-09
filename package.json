@@ -1,0 +1,40 @@
+{
+  "name": "FullstackReactCode",
+  "version": "1.0.0",
+  "description": "Companion repo to a course on Udemy.com. See here: https://www.udemy.com/node-with-react-fullstack-web-development",
+  "main": "index.js",
+  "engines": {
+    "node": "8.7.0",
+    "npm": "5.6.0"
+  },
+  "scripts": {
+    "start": "node ./server/index.js",
+    "server": "nodemon ./server/index.js",
+    "client": "npm run start --prefix ./server/client",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ontoneio/Tone-iO.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ontoneio/FullstackReactCode/issues"
+  },
+  "homepage": "https://github.com/ontoneio/FullstackReactCode#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "concurrently": "^3.5.1",
+    "cookie-session": "^2.0.0-beta.3",
+    "express": "^4.16.2",
+    "http-proxy-middleware": "^0.17.4",
+    "mongoose": "^5.0.6",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.15.1",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0",
+    "stripe": "^5.5.0"
+  }
+}
