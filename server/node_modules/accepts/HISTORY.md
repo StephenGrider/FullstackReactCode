@@ -1,3 +1,27 @@
+1.3.7 / 2019-04-29
+==================
+
+  * deps: negotiator@0.6.2
+    - Fix sorting charset, encoding, and language with extra parameters
+
+1.3.6 / 2019-04-28
+==================
+
+  * deps: mime-types@~2.1.24
+    - deps: mime-db@~1.40.0
+
+1.3.5 / 2018-02-28
+==================
+
+  * deps: mime-types@~2.1.18
+    - deps: mime-db@~1.33.0
+
+1.3.4 / 2017-08-22
+==================
+
+  * deps: mime-types@~2.1.16
+    - deps: mime-db@~1.29.0
+
 1.3.3 / 2016-05-02
 ==================
 

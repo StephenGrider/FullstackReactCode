@@ -315,8 +315,12 @@ defineGetter(req, 'protocol', function protocol(){
 
   // Note: X-Forwarded-Proto is normally only ever a
   //       single value, but this is to be safe.
-  proto = this.get('X-Forwarded-Proto') || proto;
-  return proto.split(/\s*,\s*/)[0];
+  var header = this.get('X-Forwarded-Proto') || proto
+  var index = header.indexOf(',')
+
+  return index !== -1
+    ? header.substring(0, index).trim()
+    : header.trim()
 });
 
 /**
@@ -426,6 +430,10 @@ defineGetter(req, 'hostname', function hostname(){
 
   if (!host || !trust(this.connection.remoteAddress, 0)) {
     host = this.get('Host');
+  } else if (host.indexOf(',') !== -1) {
+    // Note: X-Forwarded-Host is normally only ever a
+    //       single value, but this is to be safe.
+    host = host.substring(0, host.indexOf(',')).trimRight()
   }
 
   if (!host) return;

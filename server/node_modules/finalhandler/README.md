@@ -20,7 +20,9 @@ $ npm install finalhandler
 
 ## API
 
-```
+<!-- eslint-disable no-unused-vars -->
+
+```js
 var finalhandler = require('finalhandler')
 ```
 
@@ -114,7 +116,7 @@ var fs = require('fs')
 var http = require('http')
 
 var server = http.createServer(function (req, res) {
-  var done = finalhandler(req, res, {onerror: logerror})
+  var done = finalhandler(req, res, { onerror: logerror })
 
   fs.readFile('index.html', function (err, buf) {
     if (err) return done(err)

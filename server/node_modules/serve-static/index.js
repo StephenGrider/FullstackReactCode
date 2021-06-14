@@ -132,7 +132,7 @@ function serveStatic (root, options) {
  */
 function collapseLeadingSlashes (str) {
   for (var i = 0; i < str.length; i++) {
-    if (str[i] !== '/') {
+    if (str.charCodeAt(i) !== 0x2f /* / */) {
       break
     }
   }
@@ -142,7 +142,7 @@ function collapseLeadingSlashes (str) {
     : str
 }
 
- /**
+/**
  * Create a minimal HTML document.
  *
  * @param {string} title
@@ -159,7 +159,8 @@ function createHtmlDocument (title, body) {
     '</head>\n' +
     '<body>\n' +
     '<pre>' + body + '</pre>\n' +
-    '</body>\n'
+    '</body>\n' +
+    '</html>\n'
 }
 
 /**
@@ -201,7 +202,7 @@ function createRedirectDirectoryListener () {
     res.statusCode = 301
     res.setHeader('Content-Type', 'text/html; charset=UTF-8')
     res.setHeader('Content-Length', Buffer.byteLength(doc))
-    res.setHeader('Content-Security-Policy', "default-src 'self'")
+    res.setHeader('Content-Security-Policy', "default-src 'none'")
     res.setHeader('X-Content-Type-Options', 'nosniff')
     res.setHeader('Location', loc)
     res.end(doc)

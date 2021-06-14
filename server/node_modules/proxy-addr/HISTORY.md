@@ -1,3 +1,55 @@
+2.0.7 / 2021-05-31
+==================
+
+  * deps: forwarded@0.2.0
+    - Use `req.socket` over deprecated `req.connection`
+
+2.0.6 / 2020-02-24
+==================
+
+  * deps: ipaddr.js@1.9.1
+
+2.0.5 / 2019-04-16
+==================
+
+  * deps: ipaddr.js@1.9.0
+
+2.0.4 / 2018-07-26
+==================
+
+  * deps: ipaddr.js@1.8.0
+
+2.0.3 / 2018-02-19
+==================
+
+  * deps: ipaddr.js@1.6.0
+
+2.0.2 / 2017-09-24
+==================
+
+  * deps: forwarded@~0.1.2
+    - perf: improve header parsing
+    - perf: reduce overhead when no `X-Forwarded-For` header
+
+2.0.1 / 2017-09-10
+==================
+
+  * deps: forwarded@~0.1.1
+    - Fix trimming leading / trailing OWS
+    - perf: hoist regular expression
+  * deps: ipaddr.js@1.5.2
+
+2.0.0 / 2017-08-08
+==================
+
+  * Drop support for Node.js below 0.10
+
+1.1.5 / 2017-07-25
+==================
+
+  * Fix array argument being altered
+  * deps: ipaddr.js@1.4.0
+
 1.1.4 / 2017-03-24
 ==================
 

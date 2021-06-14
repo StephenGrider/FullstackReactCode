@@ -1,9 +1,9 @@
 # proxy-addr
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][travis-image]][travis-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][npm-url]
+[![Node.js Version][node-image]][node-url]
+[![Build Status][ci-image]][ci-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
 Determine address of proxied request
@@ -33,8 +33,8 @@ the address, `false` if you don't. The closest untrusted address is
 returned.
 
 ```js
-proxyaddr(req, function(addr){ return addr === '127.0.0.1' })
-proxyaddr(req, function(addr, i){ return i < 1 })
+proxyaddr(req, function (addr) { return addr === '127.0.0.1' })
+proxyaddr(req, function (addr, i) { return i < 1 })
 ```
 
 The `trust` arugment may also be a single IP address string or an
@@ -104,8 +104,8 @@ the same arguments as `trust` does in `proxyaddr(req, trust)` and
 returns a function suitable for `proxyaddr(req, trust)`.
 
 ```js
-var trust = proxyaddr.compile('localhost')
-var addr  = proxyaddr(req, trust)
+var trust = proxyaddr.compile('loopback')
+var addr = proxyaddr(req, trust)
 ```
 
 This function is meant to be optimized for use against every request.
@@ -128,13 +128,12 @@ $ npm run-script bench
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/proxy-addr.svg
-[npm-url]: https://npmjs.org/package/proxy-addr
-[node-version-image]: https://img.shields.io/node/v/proxy-addr.svg
-[node-version-url]: https://nodejs.org/en/download/
-[travis-image]: https://img.shields.io/travis/jshttp/proxy-addr/master.svg
-[travis-url]: https://travis-ci.org/jshttp/proxy-addr
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/proxy-addr/master.svg
+[ci-image]: https://badgen.net/github/checks/jshttp/proxy-addr/master?label=ci
+[ci-url]: https://github.com/jshttp/proxy-addr/actions?query=workflow%3Aci
+[coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/proxy-addr/master
 [coveralls-url]: https://coveralls.io/r/jshttp/proxy-addr?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/proxy-addr.svg
-[downloads-url]: https://npmjs.org/package/proxy-addr
+[node-image]: https://badgen.net/npm/node/proxy-addr
+[node-url]: https://nodejs.org/en/download
+[npm-downloads-image]: https://badgen.net/npm/dm/proxy-addr
+[npm-url]: https://npmjs.org/package/proxy-addr
+[npm-version-image]: https://badgen.net/npm/v/proxy-addr

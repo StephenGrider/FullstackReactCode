@@ -1,11 +1,10 @@
 # serve-static
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][npm-url]
 [![Linux Build][travis-image]][travis-url]
 [![Windows Build][appveyor-image]][appveyor-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![Gratipay][gratipay-image]][gratipay-url]
 
 ## Install
 
@@ -44,7 +43,7 @@ of the `Range` request header.
 ##### cacheControl
 
 Enable or disable setting `Cache-Control` response header, defaults to
-true. Disabling this will ignore the `maxAge` option.
+true. Disabling this will ignore the `immutable` and `maxAge` options.
 
 ##### dotfiles
 
@@ -93,6 +92,14 @@ all methods.
 
 The default value is `true`.
 
+##### immutable
+
+Enable or disable the `immutable` directive in the `Cache-Control` response
+header, defaults to `false`. If set to `true`, the `maxAge` option should
+also be specified to enable caching. The `immutable` directive will prevent
+supported clients from making conditional requests during the life of the
+`maxAge` option to check if the file has changed.
+
 ##### index
 
 By default this module will send "index.html" files in response to a request
@@ -134,7 +141,7 @@ var http = require('http')
 var serveStatic = require('serve-static')
 
 // Serve up public/ftp folder
-var serve = serveStatic('public/ftp', {'index': ['index.html', 'index.htm']})
+var serve = serveStatic('public/ftp', { 'index': ['index.html', 'index.htm'] })
 
 // Create server
 var server = http.createServer(function onRequest (req, res) {
@@ -185,7 +192,7 @@ var serveStatic = require('serve-static')
 
 var app = express()
 
-app.use(serveStatic('public/ftp', {'index': ['default.html', 'default.htm']}))
+app.use(serveStatic('public/ftp', { 'index': ['default.html', 'default.htm'] }))
 app.listen(3000)
 ```
 
@@ -239,15 +246,14 @@ function setCustomCacheControl (res, path) {
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/serve-static.svg
-[npm-url]: https://npmjs.org/package/serve-static
-[travis-image]: https://img.shields.io/travis/expressjs/serve-static/master.svg?label=linux
-[travis-url]: https://travis-ci.org/expressjs/serve-static
-[appveyor-image]: https://img.shields.io/appveyor/ci/dougwilson/serve-static/master.svg?label=windows
+[appveyor-image]: https://badgen.net/appveyor/ci/dougwilson/serve-static/master?label=windows
 [appveyor-url]: https://ci.appveyor.com/project/dougwilson/serve-static
-[coveralls-image]: https://img.shields.io/coveralls/expressjs/serve-static/master.svg
-[coveralls-url]: https://coveralls.io/r/expressjs/serve-static
-[downloads-image]: https://img.shields.io/npm/dm/serve-static.svg
-[downloads-url]: https://npmjs.org/package/serve-static
-[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg
-[gratipay-url]: https://gratipay.com/dougwilson/
+[coveralls-image]: https://badgen.net/coveralls/c/github/expressjs/serve-static/master
+[coveralls-url]: https://coveralls.io/r/expressjs/serve-static?branch=master
+[node-image]: https://badgen.net/npm/node/serve-static
+[node-url]: https://nodejs.org/en/download/
+[npm-downloads-image]: https://badgen.net/npm/dm/serve-static
+[npm-url]: https://npmjs.org/package/serve-static
+[npm-version-image]: https://badgen.net/npm/v/serve-static
+[travis-image]: https://badgen.net/travis/expressjs/serve-static/master?label=linux
+[travis-url]: https://travis-ci.org/expressjs/serve-static
