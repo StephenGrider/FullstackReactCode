@@ -12,6 +12,7 @@
  * @private
  */
 
+var Buffer = require('safe-buffer').Buffer
 var contentDisposition = require('content-disposition');
 var deprecate = require('depd')('express');
 var encodeUrl = require('encodeurl');
@@ -95,7 +96,7 @@ res.links = function(links){
  *
  * Examples:
  *
- *     res.send(new Buffer('wahoo'));
+ *     res.send(Buffer.from('wahoo'));
  *     res.send({ some: 'json' });
  *     res.send('<p>some html</p>');
  *
@@ -106,7 +107,6 @@ res.links = function(links){
 res.send = function send(body) {
   var chunk = body;
   var encoding;
-  var len;
   var req = this.req;
   var type;
 
@@ -171,23 +171,33 @@ res.send = function send(body) {
     }
   }
 
+  // determine if ETag should be generated
+  var etagFn = app.get('etag fn')
+  var generateETag = !this.get('ETag') && typeof etagFn === 'function'
+
   // populate Content-Length
+  var len
   if (chunk !== undefined) {
-    if (!Buffer.isBuffer(chunk)) {
-      // convert chunk to Buffer; saves later double conversions
-      chunk = new Buffer(chunk, encoding);
+    if (Buffer.isBuffer(chunk)) {
+      // get length of Buffer
+      len = chunk.length
+    } else if (!generateETag && chunk.length < 1000) {
+      // just calculate length when no ETag + small chunk
+      len = Buffer.byteLength(chunk, encoding)
+    } else {
+      // convert chunk to Buffer and calculate
+      chunk = Buffer.from(chunk, encoding)
       encoding = undefined;
+      len = chunk.length
     }
 
-    len = chunk.length;
     this.set('Content-Length', len);
   }
 
   // populate ETag
   var etag;
-  var generateETag = len !== undefined && app.get('etag fn');
-  if (typeof generateETag === 'function' && !this.get('ETag')) {
-    if ((etag = generateETag(chunk, encoding))) {
+  if (generateETag && len !== undefined) {
+    if ((etag = etagFn(chunk, encoding))) {
       this.set('ETag', etag);
     }
   }
@@ -244,9 +254,10 @@ res.json = function json(obj) {
 
   // settings
   var app = this.app;
+  var escape = app.get('json escape')
   var replacer = app.get('json replacer');
   var spaces = app.get('json spaces');
-  var body = stringify(val, replacer, spaces);
+  var body = stringify(val, replacer, spaces, escape)
 
   // content-type
   if (!this.get('Content-Type')) {
@@ -286,9 +297,10 @@ res.jsonp = function jsonp(obj) {
 
   // settings
   var app = this.app;
+  var escape = app.get('json escape')
   var replacer = app.get('json replacer');
   var spaces = app.get('json spaces');
-  var body = stringify(val, replacer, spaces);
+  var body = stringify(val, replacer, spaces, escape)
   var callback = this.req.query[app.get('jsonp callback name')];
 
   // content-type
@@ -304,7 +316,6 @@ res.jsonp = function jsonp(obj) {
 
   // jsonp
   if (typeof callback === 'string' && callback.length !== 0) {
-    this.charset = 'utf-8';
     this.set('X-Content-Type-Options', 'nosniff');
     this.set('Content-Type', 'text/javascript');
 
@@ -400,6 +411,10 @@ res.sendFile = function sendFile(path, options, callback) {
     throw new TypeError('path argument is required to res.sendFile');
   }
 
+  if (typeof path !== 'string') {
+    throw new TypeError('path must be a string to res.sendFile')
+  }
+
   // support function as second arg
   if (typeof options === 'function') {
     done = options;
@@ -489,7 +504,7 @@ res.sendfile = function (path, options, callback) {
     if (err && err.code === 'EISDIR') return next();
 
     // next() all but write errors
-    if (err && err.code !== 'ECONNABORT' && err.syscall !== 'write') {
+    if (err && err.code !== 'ECONNABORTED' && err.syscall !== 'write') {
       next(err);
     }
   });
@@ -506,19 +521,29 @@ res.sendfile = deprecate.function(res.sendfile,
  * when the data transfer is complete, or when an error has
  * ocurred. Be sure to check `res.headersSent` if you plan to respond.
  *
- * This method uses `res.sendfile()`.
+ * Optionally providing an `options` object to use with `res.sendFile()`.
+ * This function will set the `Content-Disposition` header, overriding
+ * any `Content-Disposition` header passed as header options in order
+ * to set the attachment and filename.
+ *
+ * This method uses `res.sendFile()`.
  *
  * @public
  */
 
-res.download = function download(path, filename, callback) {
+res.download = function download (path, filename, options, callback) {
   var done = callback;
   var name = filename;
+  var opts = options || null
 
-  // support function as second arg
+  // support function as second or third arg
   if (typeof filename === 'function') {
     done = filename;
     name = null;
+    opts = null
+  } else if (typeof options === 'function') {
+    done = options
+    opts = null
   }
 
   // set Content-Disposition when file is sent
@@ -526,10 +551,26 @@ res.download = function download(path, filename, callback) {
     'Content-Disposition': contentDisposition(name || path)
   };
 
+  // merge user-provided headers
+  if (opts && opts.headers) {
+    var keys = Object.keys(opts.headers)
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i]
+      if (key.toLowerCase() !== 'content-disposition') {
+        headers[key] = opts.headers[key]
+      }
+    }
+  }
+
+  // merge user-provided options
+  opts = Object.create(opts)
+  opts.headers = headers
+
   // Resolve the full path for sendFile
   var fullPath = resolve(path);
 
-  return this.sendFile(fullPath, { headers: headers }, done);
+  // send file
+  return this.sendFile(fullPath, opts, done)
 };
 
 /**
@@ -777,7 +818,7 @@ res.clearCookie = function clearCookie(name, options) {
  *    // "Remember Me" for 15 minutes
  *    res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
  *
- *    // save as above
+ *    // same as above
  *    res.cookie('rememberme', '1', { maxAge: 900000, httpOnly: true })
  *
  * @param {String} name
@@ -1063,14 +1104,39 @@ function sendfile(res, file, options, callback) {
 }
 
 /**
- * Stringify JSON, like JSON.stringify, but v8 optimized.
+ * Stringify JSON, like JSON.stringify, but v8 optimized, with the
+ * ability to escape characters that can trigger HTML sniffing.
+ *
+ * @param {*} value
+ * @param {function} replaces
+ * @param {number} spaces
+ * @param {boolean} escape
+ * @returns {string}
  * @private
  */
 
-function stringify(value, replacer, spaces) {
+function stringify (value, replacer, spaces, escape) {
   // v8 checks arguments.length for optimizing simple call
   // https://bugs.chromium.org/p/v8/issues/detail?id=4730
-  return replacer || spaces
+  var json = replacer || spaces
     ? JSON.stringify(value, replacer, spaces)
     : JSON.stringify(value);
+
+  if (escape) {
+    json = json.replace(/[<>&]/g, function (c) {
+      switch (c.charCodeAt(0)) {
+        case 0x3c:
+          return '\\u003c'
+        case 0x3e:
+          return '\\u003e'
+        case 0x26:
+          return '\\u0026'
+        /* istanbul ignore next: unreachable default */
+        default:
+          return c
+      }
+    })
+  }
+
+  return json
 }

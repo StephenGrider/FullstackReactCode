@@ -1,11 +1,10 @@
 # send
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][npm-url]
 [![Linux Build][travis-image]][travis-url]
 [![Windows Build][appveyor-image]][appveyor-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![Gratipay][gratipay-image]][gratipay-url]
 
 Send is a library for streaming files from the file system as a http response
 supporting partial responses (Ranges), conditional-GET negotiation (If-Match,
@@ -50,7 +49,7 @@ of the `Range` request header.
 ##### cacheControl
 
 Enable or disable setting `Cache-Control` response header, defaults to
-true. Disabling this will ignore the `maxAge` option.
+true. Disabling this will ignore the `immutable` and `maxAge` options.
 
 ##### dotfiles
 
@@ -85,6 +84,14 @@ If a given file doesn't exist, try appending one of the given extensions,
 in the given order. By default, this is disabled (set to `false`). An
 example value that will serve extension-less HTML files: `['html', 'htm']`.
 This is skipped if the requested file already has an extension.
+
+##### immutable
+
+Enable or diable the `immutable` directive in the `Cache-Control` response
+header, defaults to `false`. If set to `true`, the `maxAge` option should
+also be specified to enable caching. The `immutable` directive will prevent
+supported clients from making conditional requests during the life of the
+`maxAge` option to check if the file has changed.
 
 ##### index
 
@@ -167,7 +174,27 @@ $ npm test
 
 ## Examples
 
-### Small example
+### Serve a specific file
+
+This simple example will send a specific file to all requests.
+
+```js
+var http = require('http')
+var send = require('send')
+
+var server = http.createServer(function onRequest (req, res) {
+  send(req, '/path/to/index.html')
+    .pipe(res)
+})
+
+server.listen(3000)
+```
+
+### Serve all files from a directory
+
+This simple example will just serve up all the files in a
+given directory as the top-level. For example, a request
+`GET /foo.txt` will send back `/www/public/foo.txt`.
 
 ```js
 var http = require('http')
@@ -175,7 +202,8 @@ var parseUrl = require('parseurl')
 var send = require('send')
 
 var server = http.createServer(function onRequest (req, res) {
-  send(req, parseUrl(req).pathname).pipe(res)
+  send(req, parseUrl(req).pathname, { root: '/www/public' })
+    .pipe(res)
 })
 
 server.listen(3000)
@@ -197,7 +225,8 @@ send.mime.define({
 })
 
 var server = http.createServer(function onRequest (req, res) {
-  send(req, parseUrl(req).pathname).pipe(res)
+  send(req, parseUrl(req).pathname, { root: '/www/public' })
+    .pipe(res)
 })
 
 server.listen(3000)
@@ -217,9 +246,9 @@ var send = require('send')
 // Transfer arbitrary files from within /www/example.com/public/*
 // with a custom handler for directory listing
 var server = http.createServer(function onRequest (req, res) {
-  send(req, parseUrl(req).pathname, {index: false, root: '/www/example.com/public'})
-  .once('directory', directory)
-  .pipe(res)
+  send(req, parseUrl(req).pathname, { index: false, root: '/www/public' })
+    .once('directory', directory)
+    .pipe(res)
 })
 
 server.listen(3000)
@@ -273,11 +302,11 @@ var server = http.createServer(function onRequest (req, res) {
 
   // transfer arbitrary files from within
   // /www/example.com/public/*
-  send(req, parseUrl(req).pathname, {root: '/www/example.com/public'})
-  .on('error', error)
-  .on('directory', redirect)
-  .on('headers', headers)
-  .pipe(res)
+  send(req, parseUrl(req).pathname, { root: '/www/public' })
+    .on('error', error)
+    .on('directory', redirect)
+    .on('headers', headers)
+    .pipe(res)
 })
 
 server.listen(3000)
@@ -287,15 +316,14 @@ server.listen(3000)
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/send.svg
-[npm-url]: https://npmjs.org/package/send
-[travis-image]: https://img.shields.io/travis/pillarjs/send/master.svg?label=linux
-[travis-url]: https://travis-ci.org/pillarjs/send
-[appveyor-image]: https://img.shields.io/appveyor/ci/dougwilson/send/master.svg?label=windows
+[appveyor-image]: https://badgen.net/appveyor/ci/dougwilson/send/master?label=windows
 [appveyor-url]: https://ci.appveyor.com/project/dougwilson/send
-[coveralls-image]: https://img.shields.io/coveralls/pillarjs/send/master.svg
+[coveralls-image]: https://badgen.net/coveralls/c/github/pillarjs/send/master
 [coveralls-url]: https://coveralls.io/r/pillarjs/send?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/send.svg
-[downloads-url]: https://npmjs.org/package/send
-[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg
-[gratipay-url]: https://www.gratipay.com/dougwilson/
+[node-image]: https://badgen.net/npm/node/send
+[node-url]: https://nodejs.org/en/download/
+[npm-downloads-image]: https://badgen.net/npm/dm/send
+[npm-url]: https://npmjs.org/package/send
+[npm-version-image]: https://badgen.net/npm/v/send
+[travis-image]: https://badgen.net/travis/pillarjs/send/master?label=linux
+[travis-url]: https://travis-ci.org/pillarjs/send

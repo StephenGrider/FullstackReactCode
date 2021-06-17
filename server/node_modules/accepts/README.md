@@ -1,27 +1,35 @@
 # accepts
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][npm-url]
 [![Node.js Version][node-version-image]][node-version-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
-Higher level content negotiation based on [negotiator](https://www.npmjs.com/package/negotiator). Extracted from [koa](https://www.npmjs.com/package/koa) for general use.
+Higher level content negotiation based on [negotiator](https://www.npmjs.com/package/negotiator).
+Extracted from [koa](https://www.npmjs.com/package/koa) for general use.
 
 In addition to negotiator, it allows:
 
-- Allows types as an array or arguments list, ie `(['text/html', 'application/json'])` as well as `('text/html', 'application/json')`.
+- Allows types as an array or arguments list, ie `(['text/html', 'application/json'])`
+  as well as `('text/html', 'application/json')`.
 - Allows type shorthands such as `json`.
 - Returns `false` when no types match
 - Treats non-existent headers as `*`
 
 ## Installation
 
+This is a [Node.js](https://nodejs.org/en/) module available through the
+[npm registry](https://www.npmjs.com/). Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+
 ```sh
-npm install accepts
+$ npm install accepts
 ```
 
 ## API
+
+<!-- eslint-disable no-unused-vars -->
 
 ```js
 var accepts = require('accepts')
@@ -88,11 +96,11 @@ server.
 var accepts = require('accepts')
 var http = require('http')
 
-function app(req, res) {
+function app (req, res) {
   var accept = accepts(req)
 
   // the order of this list is significant; should be server preferred order
-  switch(accept.type(['json', 'html'])) {
+  switch (accept.type(['json', 'html'])) {
     case 'json':
       res.setHeader('Content-Type', 'application/json')
       res.write('{"hello":"world!"}')
@@ -123,13 +131,12 @@ curl -I -H'Accept: text/html' http://localhost:3000/
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/accepts.svg
+[coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/accepts/master
+[coveralls-url]: https://coveralls.io/r/jshttp/accepts?branch=master
+[node-version-image]: https://badgen.net/npm/node/accepts
+[node-version-url]: https://nodejs.org/en/download
+[npm-downloads-image]: https://badgen.net/npm/dm/accepts
 [npm-url]: https://npmjs.org/package/accepts
-[node-version-image]: https://img.shields.io/node/v/accepts.svg
-[node-version-url]: http://nodejs.org/download/
-[travis-image]: https://img.shields.io/travis/jshttp/accepts/master.svg
+[npm-version-image]: https://badgen.net/npm/v/accepts
+[travis-image]: https://badgen.net/travis/jshttp/accepts/master
 [travis-url]: https://travis-ci.org/jshttp/accepts
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/accepts/master.svg
-[coveralls-url]: https://coveralls.io/r/jshttp/accepts
-[downloads-image]: https://img.shields.io/npm/dm/accepts.svg
-[downloads-url]: https://npmjs.org/package/accepts
